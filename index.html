@@ -167,22 +167,25 @@
           loadFiles(which === "SP" ? f : fileSP, which === "SB" ? f : fileSB);
         }
 
-        function copyTable() {
-          try {
-            const header = COLUMNS.filter((c) => prefs.visible[c]).join("\t");
-            const lines = filtered.map((r) =>
-              COLUMNS.filter((c) => prefs.visible[c]).map((c) => cellText(c, r)).join("\t")
-            );
-            const blob = new Blob([header + "\n" + lines.join("\n")], { type: "text/plain" });
-            navigator.clipboard.writeText(header + "\n" + lines.join("\n"));
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "ppc-table.tsv";
-            a.click();
-            URL.revokeObjectURL(url);
-          } catch {}
-        }
+function copyTable() {
+  try {
+    const header = COLUMNS.filter((c) => prefs.visible[c]).join("\t");
+    const lines = filtered.map((r) =>
+      COLUMNS.filter((c) => prefs.visible[c]).map((c) => cellText(c, r)).join("\t")
+    );
+    const text = header + "\n" + lines.join("\n");
+
+    // Clipboard-only
+    navigator.clipboard.writeText(text);
+
+    // Optional: brief UI confirmation
+    setAlert("Copied table to clipboard.");
+    setTimeout(() => setAlert(""), 1500);
+  } catch (e) {
+    setAlert("Couldn’t copy to clipboard. Try clicking the button again.");
+  }
+}
+
 
         function resetAll() {
           setFileSP(null);
